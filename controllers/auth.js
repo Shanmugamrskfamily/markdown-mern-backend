@@ -43,8 +43,8 @@ const register = async (req, res) => {
     // Send an email with the activation link
     await transporter.sendMail({
       to: email,
-      subject: 'Activate Your Account',
-      html: `Click <a href="${activationLink}">here</a> to activate your account.`,
+      subject: 'Markdown Web Application-Activate Your Account',
+      html: `Click <b><a href="${activationLink}">here</a></b> to activate your account.`,
     });
 
     res.status(201).json({ message: 'User registered successfully. Activation email sent.' });
@@ -149,8 +149,8 @@ const forgotPassword = async (req, res) => {
     // Send password reset email
     await transporter.sendMail({
       to: email,
-      subject: 'Reset Your Password',
-      html: `Click <a href="${req.protocol}://${req.get('host')}/api/auth/reset-password/${resetToken}">here</a> to reset your password.`,
+      subject: 'Markdown Web Application-Reset Your Password',
+      html: `Click <b><a href="${req.protocol}://${req.get('host')}/reset-password/${resetToken}">here</a></b> to reset your password.`,
     });
 
     res.status(200).json({ message: 'Password reset email sent' });
