@@ -17,12 +17,6 @@ app.use(cors());
 
 app.use('/api/markdown',verifyToken, markdownRoutes);
 app.use('/api/auth', authRoutes); 
-const crypto = require('crypto');
-
-// Generate a Strong Secret Key: jwt-
-
-// const secretKey = crypto.randomBytes(22).toString('hex');
-// console.log('JWT_SECRET:', secretKey);
 
 
 app.get("/" , (req, res)=> {
