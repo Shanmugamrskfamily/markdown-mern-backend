@@ -91,10 +91,10 @@ const login = async (req, res) => {
   try {
     console.log('Received login request:', req.body);
 
-    const { username, password } = req.body;
-    console.log('Username:', username);
+    const { email, password } = req.body;
+    
 
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ email });
     console.log('Found user:', user);
 
     // Check if the user exists
