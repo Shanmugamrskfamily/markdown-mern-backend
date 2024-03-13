@@ -38,13 +38,13 @@ const register = async (req, res) => {
     });
 
     // Construct the activation link with the token as a query parameter
-    const activationLink = `${req.protocol}://${req.get('host')}/api/auth/activate?token=${verificationToken}`;
+    const activationLink = `https://markdown-previewer-rsk.netlify.app/activate?token=${verificationToken}`;
 
     // Send an email with the activation link
     await transporter.sendMail({
       to: email,
       subject: 'Markdown Web Application-Activate Your Account',
-      html: `Click <b><a href="${activationLink}">here</a></b> to activate your account.`,
+      html: `Click <b><button style="background-color: blue; color: white; padding: 10px; border: none; border-radius: 5px;"><a href="${activationLink}">here</a></button></b> to activate your account.`,
     });
 
     res.status(201).json({ message: 'User registered successfully. Activation email sent.' });
@@ -151,7 +151,7 @@ const forgotPassword = async (req, res) => {
     await transporter.sendMail({
       to: email,
       subject: 'Markdown Web Application-Reset Your Password',
-      html: `Click <b><a href="${req.protocol}://${req.get('host')}/reset-password/${resetToken}">here</a></b> to reset your password.`,
+      html: `Click <b><button style="background-color: blue; color: white; padding: 10px; border: none; border-radius: 5px;"><a href="https://markdown-previewer-rsk.netlify.app/reset-password?token=${resetToken}">here</a></button></b> to reset your password.`,
     });
 
     res.status(200).json({ message: 'Password reset email sent' });
