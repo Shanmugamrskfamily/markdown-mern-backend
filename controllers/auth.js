@@ -37,8 +37,8 @@ const register = async (req, res) => {
       expiresIn: '1d',
     });
 
-    // Construct the activation link
-    const activationLink = `${req.protocol}://${req.get('host')}/api/auth/activate-account/${verificationToken}`;
+    // Construct the activation link with the token as a query parameter
+    const activationLink = `${req.protocol}://${req.get('host')}/api/auth/activate?token=${verificationToken}`;
 
     // Send an email with the activation link
     await transporter.sendMail({
@@ -53,6 +53,7 @@ const register = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
 
 
 const verifyEmail = async (req, res) => {

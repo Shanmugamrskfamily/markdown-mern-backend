@@ -15,7 +15,7 @@ db();
 app.use(bodyParser.json());
 app.use(cors());
 
-app.use('/api/markdown',verifyToken, markdownRoutes);
+app.use('/api/markdown',markdownRoutes);
 app.use('/api/auth', authRoutes); 
 
 
