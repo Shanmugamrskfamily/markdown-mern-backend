@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const User = require('../models/user');
+const bcrypt = require('bcrypt');
 
 const transporter = nodemailer.createTransport({
   service: 'gmail', 
@@ -26,8 +27,11 @@ const register = async (req, res) => {
       return res.status(400).json({ message: 'Password must be at least 6 characters long' });
     }
 
-    // Create a new user with additional fields
-    const newUser = new User({ username, password, email, mobile });
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create a new user with hashed password and additional fields
+    const newUser = new User({ username, password: hashedPassword, email, mobile });
 
     // Save the user to the database
     await newUser.save();
@@ -53,7 +57,6 @@ const register = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
-
 
 
 const verifyEmail = async (req, res) => {
@@ -93,7 +96,6 @@ const login = async (req, res) => {
     console.log('Received login request:', req.body);
 
     const { email, password } = req.body;
-    
 
     const user = await User.findOne({ email });
     console.log('Found user:', user);
@@ -110,8 +112,9 @@ const login = async (req, res) => {
       return res.status(401).json({ message: 'Email not verified' });
     }
 
-    // Compare the provided password with the password in the database
-    if (password !== user.password) {
+    // Compare the provided password with the hashed password in the database
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
       console.log('Invalid password');
       return res.status(401).json({ message: 'Invalid credentials' });
     }
@@ -129,6 +132,7 @@ const login = async (req, res) => {
   }
 };
 
+
 const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
@@ -142,8 +146,11 @@ const forgotPassword = async (req, res) => {
     // Generate reset token
     const resetToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
+    // Hash the reset token before saving it
+    const hashedResetToken = await bcrypt.hash(resetToken, 10);
+
     // Save reset token and expiration time in user document
-    user.resetPasswordToken = resetToken;
+    user.resetPasswordToken = hashedResetToken;
     user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
     await user.save();
 
@@ -161,7 +168,6 @@ const forgotPassword = async (req, res) => {
   }
 };
 
-
 const resetPassword = async (req, res) => {
   try {
     const { token } = req.params;
@@ -177,8 +183,11 @@ const resetPassword = async (req, res) => {
       return res.status(400).json({ message: 'Invalid or expired token' });
     }
 
-    // Update user's password
-    user.password = password;
+    // Hash the new password before updating
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Update user's password and reset token fields
+    user.password = hashedPassword;
     user.resetPasswordToken = undefined;
     user.resetPasswordExpires = undefined;
     await user.save();
